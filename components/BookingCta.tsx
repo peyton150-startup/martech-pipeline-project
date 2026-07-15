@@ -1,5 +1,6 @@
 "use client";
 
+import posthog from "posthog-js";
 import { trackEvent } from "@/lib/tracking/trackEvent";
 import type { CtaClickedEvent } from "@/lib/tracking/types";
 
@@ -23,6 +24,12 @@ export default function BookingCta({
         location,
         ...(destinationSlug ? { destination_slug: destinationSlug } : {}),
       },
+    });
+    posthog.capture("cta_clicked", {
+      cta_id: ctaId,
+      cta_text: text,
+      location,
+      ...(destinationSlug ? { destination_slug: destinationSlug } : {}),
     });
     // Demo site: no real booking flow. In a real build this would navigate.
   }

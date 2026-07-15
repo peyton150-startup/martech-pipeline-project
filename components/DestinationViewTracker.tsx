@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import posthog from "posthog-js";
 import { trackEvent } from "@/lib/tracking/trackEvent";
 import type {
   DestinationViewedEvent,
@@ -45,6 +46,12 @@ export default function DestinationViewTracker({
         region: destination.region,
         price_from: destination.priceFrom,
       },
+    });
+    posthog.capture("destination_viewed", {
+      slug: destination.slug,
+      category: destination.category,
+      region: destination.region,
+      price_from: destination.priceFrom,
     });
   }, [destination]);
 

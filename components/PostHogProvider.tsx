@@ -82,7 +82,11 @@ export default function PostHogProvider({
       const posthog = (await import("posthog-js")).default;
 
       posthog.init(key!, {
-        api_host: host!,
+        api_host: "/ingest",
+        ui_host: "https://us.posthog.com",
+        defaults: "2026-01-30",
+        capture_exceptions: true,
+        debug: process.env.NODE_ENV === "development",
         // Bootstrap flag values so we skip the /decide round-trip.
         bootstrap: {
           featureFlags: bootstrappedFlags,
@@ -96,6 +100,7 @@ export default function PostHogProvider({
           if (segment) {
             ph.setPersonProperties({ segment });
           }
+          ph.capture("consent_granted");
         },
       });
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useState, type ReactNode } from "react";
+import posthog from "posthog-js";
 import {
   getDecision,
   type PersonalizationDecision,
@@ -62,6 +63,13 @@ export default function PersonalizedSlot({
         decided_before_paint: true, // useLayoutEffect runs before paint
         latency_ms: Math.round(latency * 100) / 100,
       },
+    });
+    posthog.capture("personalization_decided", {
+      segment: decision.segment,
+      variant: decision.variant,
+      strategy: decision.strategy,
+      decided_before_paint: true,
+      latency_ms: Math.round(latency * 100) / 100,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
