@@ -8,6 +8,7 @@ import ctaClickedSchema from "./schemas/cta_clicked.json";
 import personalizationDecidedSchema from "./schemas/personalization_decided.json";
 import { recordDebugEvent, recordSegmentStamp } from "@/lib/debug/debugBus";
 import { recordInteraction } from "@/lib/personalization/engagement";
+import { enqueueDelivery } from "./deliver";
 import type { TrackedEvent, EventInput, ConsentState } from "./types";
 
 declare global {
@@ -132,5 +133,10 @@ export function trackEvent<T extends TrackedEvent>(input: EventInput<T>): T | nu
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(full as unknown as Record<string, unknown>);
+
+  // Queue for first-party delivery that survives navigation (sendBeacon /
+  // keepalive fetch on pagehide). GTM consumes the dataLayer push above;
+  // this path guarantees the event reaches /api/collect at least once.
+  enqueueDelivery(full);
   return full;
 }

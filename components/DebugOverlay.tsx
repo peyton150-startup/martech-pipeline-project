@@ -366,6 +366,8 @@ function kindColor(kind: DebugEntry["kind"]): string {
       return "text-emerald-300";
     case "engagement":
       return "text-amber-300";
+    case "delivery":
+      return "text-fuchsia-300";
   }
 }
 

@@ -18,7 +18,7 @@
 
 import type { TrackedEvent } from "@/lib/tracking/types";
 
-export type DebugEntryKind = "event" | "stamp" | "engagement";
+export type DebugEntryKind = "event" | "stamp" | "engagement" | "delivery";
 
 export interface DebugEntry {
   id: string;
@@ -173,6 +173,20 @@ export function recordEngagementBump(slug: string, count: number): void {
   if (typeof window === "undefined") return;
   hydrate();
   pushEntry("engagement", `interaction → ${slug} (×${count})`);
+}
+
+/** Called when the delivery layer flushes a batch to /api/collect. */
+export function recordDeliveryFlush(
+  count: number,
+  transport: string,
+  reason: string
+): void {
+  if (typeof window === "undefined") return;
+  hydrate();
+  pushEntry(
+    "delivery",
+    `flushed ${count} event${count === 1 ? "" : "s"} via ${transport} (${reason})`
+  );
 }
 
 // ---- subscription API (used by the overlay via useSyncExternalStore) --------
