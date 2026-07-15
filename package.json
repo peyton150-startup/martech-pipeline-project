@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "codegen": "node scripts/generate-types.mjs",
+    "typecheck": "tsc --noEmit",
+    "prepare": "husky"
   },
   "dependencies": {
     "ajv": "^8.17.1",
@@ -18,13 +21,22 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4.1.0",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^15.5.20",
+    "husky": "^9.1.7",
+    "json-schema-to-typescript": "^15.0.4",
+    "lint-staged": "^17.0.8",
     "playwright": "^1.61.1",
     "tailwindcss": "^4.1.0",
     "typescript": "^5"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "eslint --max-warnings=0"
   }
 }
