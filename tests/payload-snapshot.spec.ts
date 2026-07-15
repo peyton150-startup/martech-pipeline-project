@@ -3,6 +3,16 @@ import { test, expect } from "@playwright/test";
 test("payload structure regression", async ({ page }) => {
   await page.goto("/destinations/maui-shores");
 
+  // Both tracked events fire in a post-hydration effect — wait for them so
+  // the snapshot always captures the complete, deterministic set.
+  await page.waitForFunction(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const names = (window.dataLayer || []).map((e: any) => e.event);
+    return (
+      names.includes("page_viewed") && names.includes("destination_viewed")
+    );
+  });
+
   const dataLayer = await page.evaluate(() => window.dataLayer);
   // Filter out any initial GTM pushes, keep only our structured events
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

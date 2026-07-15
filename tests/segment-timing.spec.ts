@@ -5,6 +5,12 @@ test("ordering/timing: segment written before navigation completes", async ({
 }) => {
   await page.goto("/destinations/maui-shores");
 
+  // The stamp is written by a post-hydration effect — wait for it rather
+  // than racing the load event.
+  await page.waitForFunction(
+    () => window.localStorage.getItem("mtp_segment") !== null
+  );
+
   // Read the localStorage for mtp_segment
   const segmentRaw = await page.evaluate(() =>
     window.localStorage.getItem("mtp_segment")
