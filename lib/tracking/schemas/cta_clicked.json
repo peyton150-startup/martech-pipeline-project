@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "cta_clicked",
+  "title": "cta_clicked",
+  "description": "Fired when a user clicks a booking or conversion CTA.",
+  "type": "object",
+  "required": ["event", "event_id", "timestamp", "cta", "consent_state"],
+  "properties": {
+    "event": { "const": "cta_clicked" },
+    "event_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "cta": {
+      "type": "object",
+      "required": ["cta_id", "cta_text", "location"],
+      "properties": {
+        "cta_id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "cta_text": { "type": "string" },
+        "location": { "enum": ["hero", "card", "detail_page", "footer"] },
+        "destination_slug": { "type": "string", "pattern": "^[a-z0-9-]+$" }
+      },
+      "additionalProperties": false
+    },
+    "consent_state": { "enum": ["granted", "denied", "pending"] }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "page_viewed",
+  "title": "page_viewed",
+  "description": "Fired once per page render, as early as possible in the page lifecycle.",
+  "type": "object",
+  "required": ["event", "event_id", "timestamp", "page", "consent_state"],
+  "properties": {
+    "event": { "const": "page_viewed" },
+    "event_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "page": {
+      "type": "object",
+      "required": ["path", "title", "page_type"],
+      "properties": {
+        "path": { "type": "string" },
+        "title": { "type": "string" },
+        "page_type": { "enum": ["home", "destination", "other"] },
+        "referrer": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "consent_state": { "enum": ["granted", "denied", "pending"] }
+  },
+  "additionalProperties": false
+}

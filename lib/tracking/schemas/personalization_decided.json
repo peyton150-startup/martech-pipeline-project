@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "personalization_decided",
+  "title": "personalization_decided",
+  "description": "Fired when the personalization engine resolves a decision for a slot. Records which strategy won and whether the decision was ready before the first paint.",
+  "type": "object",
+  "required": ["event", "event_id", "timestamp", "consent_state", "personalization"],
+  "properties": {
+    "event": { "const": "personalization_decided" },
+    "event_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "consent_state": { "enum": ["granted", "denied", "pending"] },
+    "personalization": {
+      "type": "object",
+      "required": ["segment", "variant", "strategy", "decided_before_paint", "latency_ms"],
+      "properties": {
+        "segment": { "type": ["string", "null"] },
+        "variant": { "type": "string" },
+        "strategy": { "enum": ["local-first", "bootstrapped", "default"] },
+        "decided_before_paint": { "type": "boolean" },
+        "latency_ms": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
