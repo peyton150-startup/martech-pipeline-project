@@ -61,7 +61,7 @@ export default function HomePage() {
                 Culture, cuisine, and city lights
               </h1>
               <p className="mt-3 max-w-xl text-stone-600">
-                Urban sanctuaries in the world's most vibrant cities.
+                Urban sanctuaries in the world&apos;s most vibrant cities.
               </p>
             </header>
           ),

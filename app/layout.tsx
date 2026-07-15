@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { cookies } from "next/headers";
 import "./globals.css";
 import ConsentBanner from "@/components/ConsentBanner";
 import DebugOverlay from "@/components/DebugOverlay";
