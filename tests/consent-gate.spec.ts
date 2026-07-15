@@ -44,6 +44,7 @@ test.describe("consent gate", () => {
     const dataLayer = await page.evaluate(() => window.dataLayer);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const consentEvent = dataLayer.find((e: any) => e.event === "consent_updated");
-    expect(consentEvent.consent_state).toBe("granted");
+    expect(consentEvent).toBeDefined();
+    expect(consentEvent!.consent_state).toBe("granted");
   });
 });

@@ -1,5 +1,7 @@
 # Martech Pipeline Project
 
+[![CI](https://github.com/peyton150-startup/martech-pipeline-project/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/peyton150-startup/martech-pipeline-project/actions/workflows/ci.yml)
+
 An end-to-end marketing technology pipeline built on a demo travel site:
 typed dataLayer with JSON Schema validation, Google Tag Manager with consent
 gating, PostHog events and feature flags, same/next-page personalization
@@ -34,6 +36,35 @@ stamped → next page rendered personalized. See
 2. **Engagement** — every destination view and CTA click increments a
    per-destination counter; the most-interacted destination is promoted to
    the top-left card slot, where users look first.
+
+## Reliable delivery
+
+Personalization solves one half of the race (the decision arriving before
+render); the delivery layer solves the other half (the event surviving the
+navigation). Events are queued and flushed with `navigator.sendBeacon` on
+`pagehide`/`visibilitychange` and `fetch(keepalive)` in the foreground, with
+a localStorage-backed replay for anything that never flushed — at-least-once
+delivery into an idempotent, `event_id`-deduplicating collect endpoint
+(`/api/collect`). Consent-gated end to end. The Playwright harness proves it
+by firing a CTA click and navigating away immediately.
+
+## Quality gates
+
+Every push runs [CI](.github/workflows/ci.yml):
+
+1. **Schema → type drift gate** — `lib/tracking/types.ts` is generated from
+   the JSON Schemas (`npm run codegen`); CI fails if the committed types
+   drift from the schemas, so the schema stays the single contract for
+   dev-time types, runtime ajv validation, and test assertions.
+2. **Type-check + lint** — `tsc --noEmit` over app *and* tests, ESLint.
+3. **Playwright e2e against the production build** — event payloads,
+   ordering, timing (`decided_before_paint`), no-flicker, delivery.
+4. **Lighthouse budget** — CLS ≤ 0.02 enforced as an error on the home and
+   destination pages: quantified proof, on every commit, that
+   personalization causes zero layout shift.
+
+Pre-commit hooks (husky + lint-staged) run ESLint and `tsc --noEmit` before
+a commit lands.
 
 ## Docs
 

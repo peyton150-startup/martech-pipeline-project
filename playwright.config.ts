@@ -18,7 +18,10 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run dev",
+    // CI tests the production build (`npm run build` runs first in the
+    // workflow) so timing assertions hold under real output; local runs
+    // keep the dev server for fast iteration.
+    command: process.env.CI ? "npm run start" : "npm run dev",
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI,
   },
