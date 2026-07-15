@@ -29,6 +29,7 @@ flowchart LR
 
 See [race-condition.md](race-condition.md) for a full breakdown of the three personalization strategies and why `decided_before_paint` is the critical metric.
 See [rule-templates.md](rule-templates.md) for examples of reusable personalization rules.
+See [decision-debugger.md](decision-debugger.md) for the `?debug=1` overlay that makes all of this visible live in the browser.
 
 1. **Local-first stamp** — `destination_viewed` synchronously writes the
    segment to localStorage before any network call. Next-page decisions read

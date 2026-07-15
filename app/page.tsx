@@ -1,8 +1,7 @@
 import { destinations } from "@/lib/destinations";
-import DestinationCard from "@/components/DestinationCard";
 import PageViewTracker from "@/components/PageViewTracker";
 import PersonalizedSlot from "@/components/PersonalizedSlot";
-import { reorderBySegment } from "@/lib/personalization/getDecision";
+import PersonalizedDestinationGrid from "@/components/PersonalizedDestinationGrid";
 
 export default function HomePage() {
   return (
@@ -69,51 +68,10 @@ export default function HomePage() {
         }}
       />
 
-      <PersonalizedSlot
-        slotId="home-cards"
-        defaultContent={
-          <section
-            aria-label="Destinations"
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2"
-          >
-            {destinations.map((d) => (
-              <DestinationCard key={d.slug} destination={d} />
-            ))}
-          </section>
-        }
-        variants={{
-          beach: (
-            <section
-              aria-label="Destinations"
-              className="grid grid-cols-1 gap-6 sm:grid-cols-2"
-            >
-              {reorderBySegment(destinations, "beach_intent").map((d) => (
-                <DestinationCard key={d.slug} destination={d} />
-              ))}
-            </section>
-          ),
-          ski: (
-            <section
-              aria-label="Destinations"
-              className="grid grid-cols-1 gap-6 sm:grid-cols-2"
-            >
-              {reorderBySegment(destinations, "ski_intent").map((d) => (
-                <DestinationCard key={d.slug} destination={d} />
-              ))}
-            </section>
-          ),
-          city: (
-            <section
-              aria-label="Destinations"
-              className="grid grid-cols-1 gap-6 sm:grid-cols-2"
-            >
-              {reorderBySegment(destinations, "city_intent").map((d) => (
-                <DestinationCard key={d.slug} destination={d} />
-              ))}
-            </section>
-          ),
-        }}
-      />
+      {/* Cards compose two signals (segment + engagement counts), so the
+          ordering is computed rather than picked from a static variant map —
+          the grid does its own pre-paint decision instead of PersonalizedSlot. */}
+      <PersonalizedDestinationGrid destinations={destinations} />
     </main>
   );
 }

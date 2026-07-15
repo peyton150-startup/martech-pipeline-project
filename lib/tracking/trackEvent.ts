@@ -6,6 +6,8 @@ import pageViewedSchema from "./schemas/page_viewed.json";
 import destinationViewedSchema from "./schemas/destination_viewed.json";
 import ctaClickedSchema from "./schemas/cta_clicked.json";
 import personalizationDecidedSchema from "./schemas/personalization_decided.json";
+import { recordDebugEvent, recordSegmentStamp } from "@/lib/debug/debugBus";
+import { recordInteraction } from "@/lib/personalization/engagement";
 import type { TrackedEvent, EventInput, ConsentState } from "./types";
 
 declare global {
@@ -76,6 +78,8 @@ function stampSegment(evt: TrackedEvent) {
   // 2. Mirror to a cookie so edge middleware can read the segment
   //    server-side (localStorage is client-only).
   document.cookie = `mtp_segment=${encodeURIComponent(segmentData)};path=/;max-age=2592000;SameSite=Lax`;
+
+  recordSegmentStamp(`${evt.destination.category}_intent`);
 }
 
 export function getSegment(): string | null {
@@ -120,7 +124,11 @@ export function trackEvent<T extends TrackedEvent>(input: EventInput<T>): T | nu
     return null;
   }
 
+  // Debug bus must see the event before stampSegment so the timeline's
+  // event-fired mark precedes the stamp mark.
+  recordDebugEvent(full);
   stampSegment(full);
+  recordInteraction(full);
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(full as unknown as Record<string, unknown>);

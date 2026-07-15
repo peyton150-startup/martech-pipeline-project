@@ -3,6 +3,7 @@ import Script from "next/script";
 import { cookies } from "next/headers";
 import "./globals.css";
 import ConsentBanner from "@/components/ConsentBanner";
+import DebugOverlay from "@/components/DebugOverlay";
 import PostHogProvider from "@/components/PostHogProvider";
 
 export const metadata: Metadata = {
@@ -61,6 +62,8 @@ export default function RootLayout({
           {children}
         </PostHogProvider>
         <ConsentBanner />
+        {/* Dev observability panel — renders nothing unless ?debug=1. */}
+        <DebugOverlay />
       </body>
     </html>
   );
