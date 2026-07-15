@@ -66,11 +66,37 @@ Every push runs [CI](.github/workflows/ci.yml):
 Pre-commit hooks (husky + lint-staged) run ESLint and `tsc --noEmit` before
 a commit lands.
 
+## Data & analysis
+
+The pipeline's own event data is queryable and modeled:
+
+- [SQL analysis](docs/sql-analysis.md) — real HogQL queries executed against
+  this project's PostHog data: per-segment volume, view→CTA conversion,
+  intent-to-action timing, an exact-once integrity check, and
+  `decided_before_paint` rates measured from the field.
+- [Data model & ETL](docs/data-model.md) — the raw event → profile → segment
+  → cohort → flag-decision chain, plus `npm run etl`: extract events from the
+  PostHog REST API, dedupe/type-cast, load into a normalized SQLite warehouse
+  (`npm run etl -- --fixture` runs offline on a committed real-data sample).
+- [Adobe translation layer](docs/adobe-mapping.md) — how every piece maps
+  onto Adobe Experience Cloud: schemas ↔ XDM, GTM ↔ Launch, PostHog ↔ AEP
+  Web SDK, cohorts ↔ RTCDP audiences, flags ↔ Target.
+
+## Operations
+
+- [Runbook](docs/runbook.md) — deploy, GTM Dev/Staging/Live publish +
+  rollback, post-deploy event verification, production validation with
+  browser tools, Playwright triage, and the add-a-new-event procedure.
+
 ## Docs
 
 - [Architecture](docs/architecture.md)
 - [Decision debugger](docs/decision-debugger.md)
 - [Race condition & strategies](docs/race-condition.md)
+- [Data model & ETL](docs/data-model.md)
+- [SQL analysis](docs/sql-analysis.md)
+- [Adobe mapping](docs/adobe-mapping.md)
+- [Runbook](docs/runbook.md)
 - [Naming conventions](docs/naming-conventions.md)
 
 ## Run it

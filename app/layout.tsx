@@ -14,6 +14,16 @@ export const metadata: Metadata = {
 // Set this once you create the GTM container on day 2.
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID; // e.g. "GTM-XXXXXXX"
 
+// GTM environment targeting (Dev/Staging/Live) — each environment has its own
+// gtm_auth/gtm_preview pair (GTM → Admin → Environments). Left unset, the
+// container serves the Live version. Promote/rollback flow: docs/runbook.md.
+const GTM_AUTH = process.env.NEXT_PUBLIC_GTM_AUTH;
+const GTM_PREVIEW = process.env.NEXT_PUBLIC_GTM_PREVIEW; // e.g. "env-4"
+const GTM_ENV_PARAMS =
+  GTM_AUTH && GTM_PREVIEW
+    ? `&gtm_auth=${GTM_AUTH}&gtm_preview=${GTM_PREVIEW}&gtm_cookies_win=x`
+    : "";
+
 export default function RootLayout({
   children,
 }: {
@@ -41,7 +51,7 @@ export default function RootLayout({
             {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl+'${GTM_ENV_PARAMS}';f.parentNode.insertBefore(j,f);
             })(window,document,'script','dataLayer','${GTM_ID}');`}
           </Script>
         )}
@@ -50,7 +60,7 @@ export default function RootLayout({
         {GTM_ID && (
           <noscript>
             <iframe
-              src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+              src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}${GTM_ENV_PARAMS}`}
               height="0"
               width="0"
               style={{ display: "none", visibility: "hidden" }}
