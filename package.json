@@ -10,7 +10,8 @@
     "test:e2e": "playwright test",
     "codegen": "node scripts/generate-types.mjs",
     "typecheck": "tsc --noEmit",
-    "prepare": "husky"
+    "prepare": "husky",
+    "etl": "node scripts/etl.mjs"
   },
   "dependencies": {
     "ajv": "^8.17.1",

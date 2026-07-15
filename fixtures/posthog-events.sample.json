@@ -1,0 +1,25 @@
+{
+  "_comment": "Real event sample extracted from PostHog project 512758 via the Query API on 2026-07-15, in the HogQLQuery response shape the ETL consumes. The final row intentionally duplicates the first row's event_id to exercise the dedupe path. Early rows carry event_id but no flattened payload; later rows carry the payload but no event_id — the real instrumentation drift the transform absorbs.",
+  "columns": [
+    "uuid", "event", "timestamp", "distinct_id", "event_id", "consent_state",
+    "slug", "category", "price_from", "segment", "variant", "strategy",
+    "decided_before_paint", "latency_ms", "cta_id", "location", "destination_slug", "pathname"
+  ],
+  "results": [
+    ["019f6736-ef75-752a-b6db-337c082c8831", "destination_viewed", "2026-07-15T19:18:01.690000Z", "019f6736-e6b1-7014-8793-7366727b1372", "ed301664-2387-466f-b292-c8c819432915", "granted", null, null, null, null, null, null, null, null, null, null, null, "/destinations/aspen-highlands"],
+    ["019f6736-ef75-752a-b6db-337b3c3d9957", "page_viewed", "2026-07-15T19:18:01.690000Z", "019f6736-e6b1-7014-8793-7366727b1372", "e9a84d46-5af4-487d-a0e9-d84c544bf06d", "granted", null, null, null, null, null, null, null, null, null, null, null, "/destinations/aspen-highlands"],
+    ["019f6736-f396-717a-b424-1dfe40fc01f2", "cta_clicked", "2026-07-15T19:18:02.757000Z", "019f6736-e6b1-7014-8793-7366727b1372", "90f25e77-f9b5-4ff3-8815-b46c24f74b5a", "granted", null, null, null, null, null, null, null, null, null, null, null, "/destinations/aspen-highlands"],
+    ["019f6736-f817-7cd7-86c1-b2a76e83029a", "personalization_decided", "2026-07-15T19:18:03.910000Z", "019f6736-e6b1-7014-8793-7366727b1372", "a144ca80-def4-4650-b266-46272eaeb810", "granted", null, null, null, null, null, null, null, null, null, null, null, "/"],
+    ["019f6736-f819-7604-ad72-86af4c1833cd", "page_viewed", "2026-07-15T19:18:03.912000Z", "019f6736-e6b1-7014-8793-7366727b1372", "3785be27-1b5e-4de3-b105-370b149c7acd", "granted", null, null, null, null, null, null, null, null, null, null, null, "/"],
+    ["019f6737-014f-7a3d-907e-6b11e70c8a6c", "destination_viewed", "2026-07-15T19:18:06.255000Z", "019f6736-e6b1-7014-8793-7366727b1372", "5dddcfbb-f6f9-42a9-8040-5e4269033d7a", "granted", null, null, null, null, null, null, null, null, null, null, null, "/destinations/amalfi-terraces"],
+    ["019f6739-1ac4-7fa1-a084-1254fc964f19", "destination_viewed", "2026-07-15T19:20:23.891000Z", "019f6736-e6b1-7014-8793-7366727b1372", "9c4a1e60-8fe1-40f2-897c-55428dfa710c", "granted", null, null, null, null, null, null, null, null, null, null, null, "/destinations/kyoto-quarter"],
+    ["019f6739-2902-7854-b447-d1a008620670", "cta_clicked", "2026-07-15T19:20:27.529000Z", "019f6736-e6b1-7014-8793-7366727b1372", "8c94ba5b-0b12-41c7-aadf-4062f45daca1", "granted", null, null, null, null, null, null, null, null, null, null, null, "/destinations/kyoto-quarter"],
+    ["019f675c-d610-78aa-9306-31180aa16c2c", "destination_viewed", "2026-07-15T19:59:25.657000Z", "019f6736-e6b1-7014-8793-7366727b1372", null, null, "amalfi-terraces", "beach", 356.0, null, null, null, null, null, null, null, null, "/destinations/amalfi-terraces"],
+    ["019f675c-dc0b-7e92-b431-8178b1da0f29", "personalization_decided", "2026-07-15T19:59:27.148000Z", "019f6736-e6b1-7014-8793-7366727b1372", null, null, null, null, null, "beach_intent", "beach", "local-first", true, 0.0, null, null, null, "/"],
+    ["019f675c-eb98-78d0-84d2-53c5306e4731", "destination_viewed", "2026-07-15T19:59:31.097000Z", "019f6736-e6b1-7014-8793-7366727b1372", null, null, "kyoto-quarter", "city", 214.0, null, null, null, null, null, null, null, null, "/destinations/kyoto-quarter"],
+    ["019f675c-ee8b-7d43-83a3-3f5872a82255", "cta_clicked", "2026-07-15T19:59:31.852000Z", "019f6736-e6b1-7014-8793-7366727b1372", null, null, null, null, null, null, null, null, null, null, "book_now_detail", "detail_page", "kyoto-quarter", "/destinations/kyoto-quarter"],
+    ["019f675c-ef70-725c-be2a-cb43bf8836a9", "cta_clicked", "2026-07-15T19:59:32.081000Z", "019f6736-e6b1-7014-8793-7366727b1372", null, null, null, null, null, null, null, null, null, null, "book_now_detail", "detail_page", "kyoto-quarter", "/destinations/kyoto-quarter"],
+    ["019f675c-f218-76c1-9416-a868def2106e", "personalization_decided", "2026-07-15T19:59:32.761000Z", "019f6736-e6b1-7014-8793-7366727b1372", null, null, null, null, null, "city_intent", "city", "local-first", true, 0.0, null, null, null, "/"],
+    ["019f6736-ef75-752a-b6db-337c082c8831", "destination_viewed", "2026-07-15T19:18:01.690000Z", "019f6736-e6b1-7014-8793-7366727b1372", "ed301664-2387-466f-b292-c8c819432915", "granted", null, null, null, null, null, null, null, null, null, null, null, "/destinations/aspen-highlands"]
+  ]
+}
