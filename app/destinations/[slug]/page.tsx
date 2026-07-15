@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { destinations, getDestination } from "@/lib/destinations";
 import BookingCta from "@/components/BookingCta";
@@ -27,12 +28,15 @@ export default async function DestinationPage({
         &larr; All destinations
       </Link>
 
-      <div className="mt-6 overflow-hidden rounded-2xl">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+      <div className="relative mt-6 h-72 w-full overflow-hidden rounded-2xl">
+        {/* priority: this is the LCP element on destination pages. */}
+        <Image
           src={destination.image}
           alt={destination.name}
-          className="h-72 w-full object-cover"
+          fill
+          priority
+          sizes="(max-width: 768px) 100vw, 768px"
+          className="object-cover"
         />
       </div>
 
