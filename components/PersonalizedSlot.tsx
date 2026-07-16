@@ -56,6 +56,7 @@ export default function PersonalizedSlot({
     // Emit instrumentation event.
     trackEvent<PersonalizationDecidedEvent>({
       event: "personalization_decided",
+      slot_id: slotId,
       personalization: {
         segment: decision.segment,
         variant: decision.variant,
@@ -65,6 +66,7 @@ export default function PersonalizedSlot({
       },
     });
     posthog.capture("personalization_decided", {
+      slot_id: slotId,
       segment: decision.segment,
       variant: decision.variant,
       strategy: decision.strategy,

@@ -65,6 +65,24 @@ let state: DebugState = EMPTY_STATE;
 let hydrated = false;
 const listeners = new Set<() => void>();
 
+/**
+ * The bus only records when debug mode is active, so normal traffic pays
+ * nothing (no per-event sessionStorage writes, no payloads persisted for
+ * visitors who will never open the overlay). Active means the `?debug=1`
+ * query param on the current URL, or the sessionStorage flag the overlay
+ * sets — checking both means recording is live even on the very first paint
+ * of a `?debug=1` load, before the overlay's effect has run.
+ */
+function isDebugEnabled(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    if (window.sessionStorage.getItem("mtp_debug") === "1") return true;
+  } catch {
+    // sessionStorage blocked — fall through to the URL check.
+  }
+  return /(?:^|[?&])debug=1(?:&|$)/.test(window.location.search);
+}
+
 function hydrate() {
   if (hydrated || typeof window === "undefined") return;
   hydrated = true;
@@ -121,7 +139,7 @@ function pushEntry(kind: DebugEntryKind, label: string, payload?: unknown) {
 
 /** Called by trackEvent for every validated event, before stampSegment. */
 export function recordDebugEvent(evt: TrackedEvent): void {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || !isDebugEnabled()) return;
   hydrate();
   pushEntry("event", evt.event, evt);
 
@@ -156,7 +174,7 @@ export function recordDebugEvent(evt: TrackedEvent): void {
 
 /** Called by stampSegment immediately after the localStorage/cookie write. */
 export function recordSegmentStamp(segment: string): void {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || !isDebugEnabled()) return;
   hydrate();
   pushEntry("stamp", `segment stamped → ${segment}`);
   const t = state.timeline;
@@ -170,7 +188,7 @@ export function recordSegmentStamp(segment: string): void {
 
 /** Called when an interaction count changes (engagement ranking input). */
 export function recordEngagementBump(slug: string, count: number): void {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || !isDebugEnabled()) return;
   hydrate();
   pushEntry("engagement", `interaction → ${slug} (×${count})`);
 }
@@ -181,7 +199,7 @@ export function recordDeliveryFlush(
   transport: string,
   reason: string
 ): void {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || !isDebugEnabled()) return;
   hydrate();
   pushEntry(
     "delivery",

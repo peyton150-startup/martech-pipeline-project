@@ -55,6 +55,28 @@ export const destinations: Destination[] = [
       "https://images.unsplash.com/photo-1533606688076-b6683a5f59f1?w=1200&q=80",
     priceFrom: 356,
   },
+  {
+    slug: "santorini-blue",
+    name: "Santorini Blue",
+    category: "beach",
+    region: "Cyclades, Greece",
+    blurb:
+      "Whitewashed suites over the caldera, sunset-facing plunge pools, and volcanic beaches below.",
+    image:
+      "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=1200&q=80",
+    priceFrom: 398,
+  },
+  {
+    slug: "queenstown-ridge",
+    name: "Queenstown Ridge",
+    category: "ski",
+    region: "Otago, New Zealand",
+    blurb:
+      "Southern Alps powder by day, lakefront cellar doors by night, and a fireside spa in between.",
+    image:
+      "https://images.unsplash.com/photo-1589802829985-817e51171b92?w=1200&q=80",
+    priceFrom: 372,
+  },
 ];
 
 export function getDestination(slug: string): Destination | undefined {

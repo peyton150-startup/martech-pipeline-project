@@ -45,6 +45,11 @@ export function recordInteraction(evt: TrackedEvent): void {
   if (typeof window === "undefined") return;
   if (evt.event === "destination_viewed") {
     bumpInteraction(evt.destination.slug);
+  } else if (evt.event === "destination_saved") {
+    // A save is a stronger signal than a view — count it twice so a saved
+    // destination outranks a merely-viewed one for the top-left slot.
+    bumpInteraction(evt.destination.slug);
+    bumpInteraction(evt.destination.slug);
   } else if (evt.event === "cta_clicked" && evt.cta.destination_slug) {
     bumpInteraction(evt.cta.destination_slug);
   }

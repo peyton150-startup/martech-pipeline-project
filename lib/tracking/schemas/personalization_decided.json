@@ -12,6 +12,10 @@
       "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
     },
     "timestamp": { "type": "string", "format": "date-time" },
+    "slot_id": {
+      "type": "string",
+      "description": "Which personalized slot resolved this decision (e.g. home-hero, home-cards, detail-cta). A page can host multiple slots, each emitting its own decision."
+    },
     "consent_state": { "enum": ["granted", "denied", "pending"] },
     "personalization": {
       "type": "object",

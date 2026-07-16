@@ -1,12 +1,40 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { destinations, getDestination } from "@/lib/destinations";
-import BookingCta from "@/components/BookingCta";
+import AdaptiveBookingCta from "@/components/AdaptiveBookingCta";
+import DestinationImage from "@/components/DestinationImage";
 import DestinationViewTracker from "@/components/DestinationViewTracker";
+import SaveButton from "@/components/SaveButton";
 
 export function generateStaticParams() {
   return destinations.map((d) => ({ slug: d.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const destination = getDestination(slug);
+  if (!destination) {
+    return { title: "Destination not found — Wayfarer Collection" };
+  }
+  const title = `${destination.name} — Wayfarer Collection`;
+  const description = destination.blurb;
+  return {
+    title,
+    description,
+    alternates: { canonical: `/destinations/${destination.slug}` },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      images: [{ url: destination.image, alt: destination.name }],
+    },
+    twitter: { card: "summary_large_image", title, description },
+  };
 }
 
 export default async function DestinationPage({
@@ -30,13 +58,17 @@ export default async function DestinationPage({
 
       <div className="relative mt-6 h-72 w-full overflow-hidden rounded-2xl">
         {/* priority: this is the LCP element on destination pages. */}
-        <Image
+        <DestinationImage
           src={destination.image}
           alt={destination.name}
-          fill
           priority
           sizes="(max-width: 768px) 100vw, 768px"
           className="object-cover"
+        />
+        <SaveButton
+          destination={destination}
+          location="detail_page"
+          className="absolute right-4 top-4 z-10 h-11 w-11 text-xl"
         />
       </div>
 
@@ -58,11 +90,8 @@ export default async function DestinationPage({
       </div>
 
       <div className="mt-10">
-        <BookingCta
-          ctaId="book_now_detail"
-          location="detail_page"
-          destinationSlug={destination.slug}
-        />
+        {/* Behavior-aware: browsing_hesitant visitors get an assistance CTA. */}
+        <AdaptiveBookingCta destinationSlug={destination.slug} />
       </div>
     </main>
   );

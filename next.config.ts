@@ -25,6 +25,29 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Baseline security headers on every response. Deliberately no strict CSP:
+  // GTM and the consent snippet inject inline scripts, so a lockdown CSP
+  // would need nonce plumbing through next/script — out of scope here.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+        ],
+      },
+    ];
+  },
   skipTrailingSlashRedirect: true,
 };
 

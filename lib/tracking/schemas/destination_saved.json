@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "destination_saved",
+  "title": "destination_saved",
+  "description": "Fired when a user saves (wishlists) a destination. A stronger intent signal than a view — feeds engagement ranking and the browsing_hesitant behavioral segment.",
+  "type": "object",
+  "required": ["event", "event_id", "timestamp", "destination", "consent_state"],
+  "properties": {
+    "event": { "const": "destination_saved" },
+    "event_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "destination": {
+      "type": "object",
+      "required": ["slug", "category"],
+      "properties": {
+        "slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "category": { "enum": ["beach", "ski", "city"] },
+        "location": { "enum": ["card", "detail_page"] }
+      },
+      "additionalProperties": false
+    },
+    "consent_state": { "enum": ["granted", "denied", "pending"] }
+  },
+  "additionalProperties": false
+}

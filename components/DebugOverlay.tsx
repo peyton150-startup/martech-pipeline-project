@@ -101,7 +101,7 @@ function DebugPanel({ onClose }: { onClose: () => void }) {
       <header className="flex items-center justify-between border-b border-stone-800 px-3 py-2">
         <p className="flex items-center gap-2 text-xs font-semibold tracking-widest text-stone-100">
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:animate-none" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
           </span>
           DECISION DEBUGGER

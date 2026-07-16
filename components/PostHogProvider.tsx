@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState, createContext, useContext } from "react";
+import { usePathname } from "next/navigation";
 import { getConsentState, getSegment } from "@/lib/tracking/trackEvent";
+import { getBehaviorSegment } from "@/lib/personalization/behavior";
 
 // ---------------------------------------------------------------------------
 // PostHog context — lets child components access posthog + flag values
@@ -22,6 +24,30 @@ const PostHogContext = createContext<PostHogContextValue>({
 
 export function usePostHog() {
   return useContext(PostHogContext);
+}
+
+/**
+ * Strategy 2 (bootstrapped flags), client half: the edge middleware evaluated
+ * the flag server-side and set the `mtp_bootstrapped_flags` cookie
+ * (httpOnly:false so JS can read it). Reading it here means posthog-js
+ * initializes with flag answers already in hand — no `/decide` round-trip and
+ * no flicker — while keeping the pages statically rendered (no `cookies()` in
+ * the layout, which would force dynamic rendering).
+ */
+function readBootstrappedFlagsCookie(): Record<string, string | boolean> {
+  if (typeof document === "undefined") return {};
+  const match = document.cookie.match(
+    /(?:^|;\s*)mtp_bootstrapped_flags=([^;]+)/
+  );
+  if (!match) return {};
+  try {
+    return JSON.parse(decodeURIComponent(match[1])) as Record<
+      string,
+      string | boolean
+    >;
+  } catch {
+    return {};
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -52,6 +78,7 @@ export default function PostHogProvider({
   const [ph, setPh] = useState<any | null>(null);
   const [flags, setFlags] = useState<Record<string, string | boolean>>(bootstrappedFlags);
   const initAttempted = useRef(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     if (initAttempted.current) return;
@@ -81,6 +108,16 @@ export default function PostHogProvider({
       // consent hasn't been granted yet.
       const posthog = (await import("posthog-js")).default;
 
+      // Merge the server-evaluated flags from the middleware cookie over any
+      // passed as a prop, so the SDK has answers at init.
+      const bootstrapFlags = {
+        ...bootstrappedFlags,
+        ...readBootstrappedFlagsCookie(),
+      };
+      if (Object.keys(bootstrapFlags).length > 0) {
+        setFlags((prev) => ({ ...prev, ...bootstrapFlags }));
+      }
+
       posthog.init(key!, {
         api_host: "/ingest",
         ui_host: "https://us.posthog.com",
@@ -89,16 +126,22 @@ export default function PostHogProvider({
         debug: process.env.NODE_ENV === "development",
         // Bootstrap flag values so we skip the /decide round-trip.
         bootstrap: {
-          featureFlags: bootstrappedFlags,
+          featureFlags: bootstrapFlags,
         },
         capture_pageview: false, // We fire our own page_viewed events.
         capture_pageleave: false,
         persistence: "localStorage+cookie",
         loaded: (ph) => {
-          // Sync the segment as a person property for PostHog cohorts.
+          // Sync both segmentation dimensions as person properties so PostHog
+          // can build cohorts on intent (beach_intent, …) and on behavior
+          // (browsing_hesitant / engaged).
           const segment = getSegment();
           if (segment) {
             ph.setPersonProperties({ segment });
+          }
+          const behavior = getBehaviorSegment();
+          if (behavior) {
+            ph.setPersonProperties({ behavior_segment: behavior });
           }
           ph.capture("consent_granted");
         },
@@ -118,14 +161,19 @@ export default function PostHogProvider({
     tryInit();
   }, [bootstrappedFlags]);
 
-  // Keep the segment person-property in sync on every navigation.
+  // Keep the segmentation person-properties in sync on navigation — keyed on
+  // pathname so this runs once per page, not on every render.
   useEffect(() => {
     if (!ph) return;
     const segment = getSegment();
     if (segment) {
       ph.setPersonProperties({ segment });
     }
-  });
+    const behavior = getBehaviorSegment();
+    if (behavior) {
+      ph.setPersonProperties({ behavior_segment: behavior });
+    }
+  }, [ph, pathname]);
 
   return (
     <PostHogContext.Provider value={{ posthog: ph, flags }}>

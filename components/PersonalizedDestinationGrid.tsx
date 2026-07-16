@@ -44,6 +44,7 @@ export default function PersonalizedDestinationGrid({
 
     trackEvent<PersonalizationDecidedEvent>({
       event: "personalization_decided",
+      slot_id: "home-cards",
       personalization: {
         segment: decision.segment,
         // Encode the engagement pick so telemetry shows *why* the grid
@@ -64,8 +65,8 @@ export default function PersonalizedDestinationGrid({
       data-testid="destination-grid"
       className="grid grid-cols-1 gap-6 sm:grid-cols-2"
     >
-      {ordered.map((d) => (
-        <DestinationCard key={d.slug} destination={d} />
+      {ordered.map((d, i) => (
+        <DestinationCard key={d.slug} destination={d} priority={i === 0} />
       ))}
     </section>
   );

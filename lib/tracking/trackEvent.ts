@@ -1,13 +1,9 @@
 "use client";
 
-import Ajv, { ValidateFunction } from "ajv";
-import addFormats from "ajv-formats";
-import pageViewedSchema from "./schemas/page_viewed.json";
-import destinationViewedSchema from "./schemas/destination_viewed.json";
-import ctaClickedSchema from "./schemas/cta_clicked.json";
-import personalizationDecidedSchema from "./schemas/personalization_decided.json";
+import { getValidator } from "./validators";
 import { recordDebugEvent, recordSegmentStamp } from "@/lib/debug/debugBus";
 import { recordInteraction } from "@/lib/personalization/engagement";
+import { recordBehaviorSignal } from "@/lib/personalization/behavior";
 import { enqueueDelivery } from "./deliver";
 import type { TrackedEvent, EventInput, ConsentState } from "./types";
 
@@ -19,18 +15,6 @@ declare global {
 
 const SEGMENT_KEY = "mtp_segment"; // read synchronously by the personalization layer (day 4)
 const CONSENT_KEY = "mtp_consent";
-
-// ---- schema registry -------------------------------------------------------
-
-const ajv = new Ajv({ allErrors: true });
-addFormats(ajv);
-
-const validators: Record<string, ValidateFunction> = {
-  page_viewed: ajv.compile(pageViewedSchema),
-  destination_viewed: ajv.compile(destinationViewedSchema),
-  cta_clicked: ajv.compile(ctaClickedSchema),
-  personalization_decided: ajv.compile(personalizationDecidedSchema),
-};
 
 // ---- consent ----------------------------------------------------------------
 
@@ -59,6 +43,10 @@ export function setConsentState(state: Exclude<ConsentState, "pending">) {
 
   // 2. Custom consent_updated event for data-layer consumers.
   window.dataLayer.push({ event: "consent_updated", consent_state: state });
+
+  // 3. Notify the delivery layer so any queue held while consent was pending
+  //    flushes immediately on grant (and is dropped on denial).
+  window.dispatchEvent(new CustomEvent("mtp:consent", { detail: state }));
 }
 
 // ---- segment stamping (the seed of same/next-page personalization) ----------
@@ -111,7 +99,7 @@ export function trackEvent<T extends TrackedEvent>(input: EventInput<T>): T | nu
   } as T;
 
   const eventName = full.event;
-  const validate = validators[eventName];
+  const validate = getValidator(eventName);
   if (!validate) {
     console.error(`[tracking] no schema registered for event "${eventName}"`);
     return null;
@@ -130,6 +118,7 @@ export function trackEvent<T extends TrackedEvent>(input: EventInput<T>): T | nu
   recordDebugEvent(full);
   stampSegment(full);
   recordInteraction(full);
+  recordBehaviorSignal(full);
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(full as unknown as Record<string, unknown>);

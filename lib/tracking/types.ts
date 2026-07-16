@@ -28,6 +28,20 @@ export interface CtaClickedEvent {
   consent_state: "granted" | "denied" | "pending";
 }
 /**
+ * Fired when a user saves (wishlists) a destination. A stronger intent signal than a view — feeds engagement ranking and the browsing_hesitant behavioral segment.
+ */
+export interface DestinationSavedEvent {
+  event: "destination_saved";
+  event_id: string;
+  timestamp: string;
+  destination: {
+    slug: string;
+    category: "beach" | "ski" | "city";
+    location?: "card" | "detail_page";
+  };
+  consent_state: "granted" | "denied" | "pending";
+}
+/**
  * Fired when a destination detail page renders. The category drives audience segmentation.
  */
 export interface DestinationViewedEvent {
@@ -64,6 +78,10 @@ export interface PersonalizationDecidedEvent {
   event: "personalization_decided";
   event_id: string;
   timestamp: string;
+  /**
+   * Which personalized slot resolved this decision (e.g. home-hero, home-cards, detail-cta). A page can host multiple slots, each emitting its own decision.
+   */
+  slot_id?: string;
   consent_state: "granted" | "denied" | "pending";
   personalization: {
     segment: string | null;
@@ -75,6 +93,7 @@ export interface PersonalizationDecidedEvent {
 }
 export type TrackedEvent =
   | CtaClickedEvent
+  | DestinationSavedEvent
   | DestinationViewedEvent
   | PageViewedEvent
   | PersonalizationDecidedEvent;

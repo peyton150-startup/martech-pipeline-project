@@ -66,6 +66,18 @@ function ensureInit() {
     if (document.visibilityState === "hidden") flush("hidden");
   });
   window.addEventListener("pagehide", () => flush("pagehide"));
+
+  // setConsentState dispatches this. Flush a queue held during "pending" the
+  // instant consent is granted; drop it outright on denial.
+  window.addEventListener("mtp:consent", (e) => {
+    const detail = (e as CustomEvent<string>).detail;
+    if (detail === "granted") {
+      flush("consent-granted");
+    } else if (detail === "denied") {
+      queue = [];
+      persistQueue();
+    }
+  });
 }
 
 function requeue(batch: TrackedEvent[]) {

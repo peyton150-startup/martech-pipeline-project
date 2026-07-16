@@ -31,11 +31,27 @@ stamped → next page rendered personalized. See
 
 ## Personalization signals
 
-1. **Segment** — viewing a destination stamps `{category}_intent`; the next
-   page reorders content for that category before first paint.
-2. **Engagement** — every destination view and CTA click increments a
-   per-destination counter; the most-interacted destination is promoted to
-   the top-left card slot, where users look first.
+Three composed signals, not one — the way real personalization engines work:
+
+1. **Intent segment** — viewing a destination stamps `{category}_intent`; the
+   next page reorders content for that category before first paint.
+2. **Engagement** — every view, save, and CTA click increments a
+   per-destination counter (a save weighs more than a view); the
+   most-interacted destination is promoted to the top-left card slot, where
+   users look first.
+3. **Behavioral segment** — a visitor who views 3+ destinations in a session
+   without saving or booking becomes `browsing_hesitant` and the detail-page
+   CTA adapts from "book now" to "talk to a trip planner". Composes with the
+   intent segment rather than replacing it; both sync to PostHog as person
+   properties for cohort building.
+
+Every personalized region is a scoped slot that decides synchronously before
+paint and emits a `slot_id`-tagged `personalization_decided` event — so a page
+with several slots produces several honestly-labelled decisions, and the
+behavioral CTA choice is observable data, not just a UI swap. A **wishlist
+save** (`destination_saved`) is the newest event type, added end-to-end
+(schema → generated types → runtime + server validation → delivery → tests)
+to show the add-an-event workflow.
 
 ## Reliable delivery
 
