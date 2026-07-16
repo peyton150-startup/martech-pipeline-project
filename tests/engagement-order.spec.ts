@@ -61,9 +61,11 @@ test("engagement: segment ordering fills the rest of the grid", async ({
     .poll(() => gridHrefs(page))
     .toEqual([
       "/destinations/maui-shores", // top-left: most interacted
-      "/destinations/amalfi-terraces", // next: matches beach_intent segment
+      "/destinations/amalfi-terraces", // beach_intent segment, original order
+      "/destinations/santorini-blue", // beach_intent segment, original order
       "/destinations/aspen-highlands", // rest keep original order
       "/destinations/kyoto-quarter",
+      "/destinations/queenstown-ridge",
     ]);
 });
 
@@ -78,5 +80,7 @@ test("engagement: default order with no interaction history", async ({
       "/destinations/aspen-highlands",
       "/destinations/kyoto-quarter",
       "/destinations/amalfi-terraces",
+      "/destinations/santorini-blue",
+      "/destinations/queenstown-ridge",
     ]);
 });

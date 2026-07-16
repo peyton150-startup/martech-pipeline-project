@@ -1,6 +1,20 @@
 [
   {
     "event": "string",
+    "slot_id": "string",
+    "personalization": {
+      "segment": "object",
+      "variant": "string",
+      "strategy": "string",
+      "decided_before_paint": "boolean",
+      "latency_ms": "number"
+    },
+    "event_id": "string",
+    "timestamp": "string",
+    "consent_state": "string"
+  },
+  {
+    "event": "string",
     "page": {
       "path": "string",
       "title": "string",
