@@ -1,0 +1,12 @@
+# Normalize line endings to LF on checkout for every platform.
+#
+# Why this matters here: Playwright's text snapshots (and the
+# JSON.stringify output the payload-snapshot test compares against) always
+# use LF. Without this file, git's autocrlf on Windows rewrites checked-out
+# files to CRLF, so the byte-level snapshot comparison fails with a diff
+# that shows no visible difference (every line differs only by a trailing
+# \r). Pinning eol=lf makes the working tree deterministic everywhere.
+* text=auto eol=lf
+
+# Belt-and-suspenders: the snapshot fixtures must never be CRLF.
+tests/**/*.json text eol=lf
